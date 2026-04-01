@@ -2,7 +2,8 @@
 
 module TurboTour
   class Configuration
-    attr_accessor :highlight_classes, :journey_globs, :session_storage_key, :skippable, :tooltip_partial
+    attr_accessor :highlight_classes, :journey_globs, :session_storage_key, :skippable, :tooltip_partial,
+                  :default_locale
 
     def initialize
       @highlight_classes = ""
@@ -10,6 +11,7 @@ module TurboTour
       @session_storage_key = "turbo_tour_session_id"
       @skippable = true
       @tooltip_partial = "turbo_tour/tooltip"
+      @default_locale = nil
     end
   end
 end

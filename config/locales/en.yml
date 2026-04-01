@@ -1,0 +1,7 @@
+en:
+  turbo_tour:
+    prev: "Prev"
+    next: "Next"
+    finish: "Finish"
+    skip: "Skip"
+    progress: "Step %{current} of %{total}"

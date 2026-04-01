@@ -51,6 +51,14 @@ module TurboTourTestSupport
     FileUtils.mkdir_p(path.dirname)
     path.write(contents)
   end
+
+  def with_i18n_available_locales(locales)
+    original = I18n.available_locales
+    I18n.available_locales = locales
+    yield
+  ensure
+    I18n.available_locales = original
+  end
 end
 
 class ActiveSupport::TestCase

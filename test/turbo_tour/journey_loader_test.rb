@@ -106,4 +106,56 @@ class TurboTourJourneyLoaderTest < ActiveSupport::TestCase
       assert_match(/Unknown TurboTour journey/, error.message)
     end
   end
+
+  test "supports locale-keyed hashes for title and body" do
+    with_temporary_directory do |root|
+      write_file(root.join("config/turbo_tours/multilang.yml"), <<~YAML)
+        journeys:
+          welcome:
+            - name: greeting
+              target: greeting-banner
+              title:
+                en: Welcome
+                es: Bienvenido
+              body:
+                en: Let us show you around.
+                es: Permítanos mostrarle el lugar.
+      YAML
+
+      loader = TurboTour::JourneyLoader.new(configuration: TurboTour.configuration, root: root)
+      step = loader.fetch(:welcome).first
+
+      assert_equal({ "en" => "Welcome", "es" => "Bienvenido" }, step["title"])
+      assert_equal({ "en" => "Let us show you around.", "es" => "Permítanos mostrarle el lugar." }, step["body"])
+    end
+  end
+
+  test "supports mixed plain strings and locale-keyed hashes in the same journey" do
+    with_temporary_directory do |root|
+      write_file(root.join("config/turbo_tours/mixed.yml"), <<~YAML)
+        journeys:
+          onboarding:
+            - name: step_one
+              target: step-one
+              title:
+                en: Hello
+                fr: Bonjour
+              body: This body is not localized.
+            - name: step_two
+              target: step-two
+              title: Plain title
+              body:
+                en: English body
+                fr: Corps français
+      YAML
+
+      loader = TurboTour::JourneyLoader.new(configuration: TurboTour.configuration, root: root)
+      steps = loader.fetch(:onboarding)
+
+      assert_equal({ "en" => "Hello", "fr" => "Bonjour" }, steps[0]["title"])
+      assert_equal "This body is not localized.", steps[0]["body"]
+      assert_equal "Plain title", steps[1]["title"]
+      assert_equal({ "en" => "English body", "fr" => "Corps français" }, steps[1]["body"])
+    end
+  end
 end

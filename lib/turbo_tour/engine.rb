@@ -17,6 +17,10 @@ module TurboTour
       app.config.assets.precompile += %w[controllers/turbo_tour_controller.js]
     end
 
+    initializer "turbo_tour.i18n" do
+      config.i18n.load_path += Dir[Engine.root.join("config/locales/**/*.yml")]
+    end
+
     initializer "turbo_tour.view_helpers" do
       ActiveSupport.on_load(:action_view) do
         include ::TurboTourHelper

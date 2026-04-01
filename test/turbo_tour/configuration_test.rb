@@ -11,5 +11,13 @@ class TurboTourConfigurationTest < ActiveSupport::TestCase
     assert_equal true, configuration.skippable
     assert_equal "turbo_tour/tooltip", configuration.tooltip_partial
     assert_includes configuration.journey_globs, "config/turbo_tours/**/*.yml"
+    assert_nil configuration.default_locale
+  end
+
+  test "default_locale can be set" do
+    configuration = TurboTour::Configuration.new
+    configuration.default_locale = :es
+
+    assert_equal :es, configuration.default_locale
   end
 end

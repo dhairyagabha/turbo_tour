@@ -2,4 +2,7 @@ TurboTour.configure do |config|
   config.highlight_classes = ""
   config.session_storage_key = "turbo_tour_session_id"
   config.skippable = true
+
+  # Set a default locale for tours. When nil, falls back to I18n.locale.
+  # config.default_locale = :en
 end

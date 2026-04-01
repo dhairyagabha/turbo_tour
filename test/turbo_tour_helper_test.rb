@@ -62,6 +62,49 @@ class TurboTourHelperTest < ActiveSupport::TestCase
     assert_match(/Pass at least one journey name/, error.message)
   end
 
+  test "includes UI translations in data attributes" do
+    html = with_sample_journeys do
+      view_context.turbo_tour("dashboard_intro")
+    end
+
+    assert_includes html, "data-turbo-tour-translations"
+    assert_includes html, "&quot;prev&quot;"
+    assert_includes html, "&quot;next&quot;"
+    assert_includes html, "&quot;finish&quot;"
+    assert_includes html, "&quot;skip&quot;"
+    assert_includes html, "&quot;progress&quot;"
+  end
+
+  test "resolves locale-keyed journey content for the current locale" do
+    with_i18n_available_locales([:en, :es]) do
+      html = with_multilang_journeys do
+        view_context.turbo_tour("welcome", locale: :es)
+      end
+
+      assert_includes html, "Bienvenido"
+      refute_includes html, "Welcome"
+    end
+  end
+
+  test "resolves locale-keyed journey content falling back to first available locale" do
+    with_i18n_available_locales([:en, :es, :de]) do
+      html = with_multilang_journeys do
+        view_context.turbo_tour("welcome", locale: :de)
+      end
+
+      # Falls back to first available value (en)
+      assert_includes html, "Welcome"
+    end
+  end
+
+  test "passes explicit locale to tooltip partial" do
+    html = with_sample_journeys do
+      view_context.turbo_tour("dashboard_intro", locale: :en)
+    end
+
+    assert_includes html, "data-turbo-tour-translations"
+  end
+
   private
 
   def sample_journeys
@@ -91,9 +134,36 @@ class TurboTourHelperTest < ActiveSupport::TestCase
     context
   end
 
+  def multilang_journeys
+    <<~YAML
+      journeys:
+        welcome:
+          - name: greeting
+            target: greeting-banner
+            title:
+              en: Welcome
+              es: Bienvenido
+            body:
+              en: Let us show you around.
+              es: Permítanos mostrarle el lugar.
+    YAML
+  end
+
   def with_sample_journeys
     with_temporary_directory do |root|
       write_file(root.join("config/turbo_tours/dashboard.yml"), sample_journeys)
+      TurboTour.instance_variable_set(
+        :@journey_loader,
+        TurboTour::JourneyLoader.new(configuration: TurboTour.configuration, root: root)
+      )
+
+      yield
+    end
+  end
+
+  def with_multilang_journeys
+    with_temporary_directory do |root|
+      write_file(root.join("config/turbo_tours/multilang.yml"), multilang_journeys)
       TurboTour.instance_variable_set(
         :@journey_loader,
         TurboTour::JourneyLoader.new(configuration: TurboTour.configuration, root: root)

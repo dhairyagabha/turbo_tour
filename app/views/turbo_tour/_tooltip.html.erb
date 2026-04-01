@@ -1,3 +1,4 @@
+<% tour_locale = local_assigns.fetch(:locale, I18n.locale) %>
 <div
   data-turbo-tour-panel
   role="dialog"
@@ -21,7 +22,7 @@
           data-turbo-tour-prev
           class="turbo-tour-tooltip__button turbo-tour-tooltip__button--secondary"
         >
-          Prev
+          <%= I18n.t("turbo_tour.prev", locale: tour_locale, default: "Prev") %>
         </button>
 
         <button
@@ -30,7 +31,7 @@
           data-turbo-tour-next
           class="turbo-tour-tooltip__button turbo-tour-tooltip__button--primary"
         >
-          Next
+          <%= I18n.t("turbo_tour.next", locale: tour_locale, default: "Next") %>
         </button>
       </div>
 
@@ -40,7 +41,7 @@
         data-turbo-tour-skip
         class="turbo-tour-tooltip__button turbo-tour-tooltip__button--ghost"
       >
-        Skip
+        <%= I18n.t("turbo_tour.skip", locale: tour_locale, default: "Skip") %>
       </button>
     </div>
   </div>
