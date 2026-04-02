@@ -1,0 +1,25 @@
+class CreateTurboTourEvents < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
+  def change
+    create_table :turbo_tour_events do |t|
+      t.string   :session_id,          null: false
+      t.string   :journey_name,        null: false
+      t.string   :step_name
+      t.integer  :step_index
+      t.integer  :total_steps
+      t.string   :event_name,          null: false
+      t.decimal  :progress,            precision: 3, scale: 2
+      t.integer  :progress_percentage
+      t.string   :reason
+      t.string   :trackable_type
+      t.bigint   :trackable_id
+      t.string   :ip_address
+      t.string   :user_agent
+      t.datetime :created_at,          null: false
+    end
+
+    add_index :turbo_tour_events, :session_id
+    add_index :turbo_tour_events, [:trackable_type, :trackable_id], name: "idx_turbo_tour_events_trackable"
+    add_index :turbo_tour_events, [:journey_name, :event_name]
+    add_index :turbo_tour_events, :created_at
+  end
+end

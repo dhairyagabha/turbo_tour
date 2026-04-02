@@ -11,6 +11,7 @@ module TurboTour
     class InvalidJourneyError < Error; end
 
     REQUIRED_STEP_KEYS = %w[name target title body].freeze
+    LOCALIZABLE_KEYS = %w[title body].freeze
 
     def initialize(configuration:, root: nil)
       @configuration = configuration
@@ -94,9 +95,15 @@ module TurboTour
       normalized.merge(
         "name" => normalized["name"].to_s,
         "target" => normalized["target"].to_s,
-        "title" => normalized["title"].to_s,
-        "body" => normalized["body"].to_s
+        "title" => normalize_localizable(normalized["title"]),
+        "body" => normalize_localizable(normalized["body"])
       )
+    end
+
+    def normalize_localizable(value)
+      return value.transform_keys(&:to_s).transform_values(&:to_s) if value.is_a?(Hash)
+
+      value.to_s
     end
 
     def self.rails_root

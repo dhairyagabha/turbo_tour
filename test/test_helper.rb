@@ -8,7 +8,7 @@ require "fileutils"
 require "rails"
 require "action_controller/railtie"
 require "action_view/railtie"
-require "rails/test_help"
+require "active_record/railtie"
 require "rails/generators/test_case"
 
 require_relative "../lib/turbo_tour"
@@ -27,6 +27,34 @@ end
 
 Rails.application.initialize! unless Rails.application.initialized?
 
+require "rails/test_help"
+
+ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+ActiveRecord::Schema.define do
+  create_table :turbo_tour_events, force: true do |t|
+    t.string   :session_id,          null: false
+    t.string   :journey_name,        null: false
+    t.string   :step_name
+    t.integer  :step_index
+    t.integer  :total_steps
+    t.string   :event_name,          null: false
+    t.decimal  :progress,            precision: 3, scale: 2
+    t.integer  :progress_percentage
+    t.string   :reason
+    t.string   :trackable_type
+    t.bigint   :trackable_id
+    t.string   :ip_address
+    t.string   :user_agent
+    t.datetime :created_at,          null: false
+  end
+
+  create_table :users, force: true do |t|
+    t.string :name
+  end
+end
+
+class User < ActiveRecord::Base; end
+
 module TurboTourTestSupport
   def reset_turbo_tour_configuration
     defaults = TurboTour::Configuration.new
@@ -37,6 +65,9 @@ module TurboTourTestSupport
     configuration.session_storage_key = defaults.session_storage_key
     configuration.skippable = defaults.skippable
     configuration.tooltip_partial = defaults.tooltip_partial
+    configuration.analytics_enabled = defaults.analytics_enabled
+    configuration.analytics_endpoint_path = defaults.analytics_endpoint_path
+    configuration.current_user_resolver = defaults.current_user_resolver
 
     TurboTour.reload!
   end
@@ -50,6 +81,14 @@ module TurboTourTestSupport
   def write_file(path, contents)
     FileUtils.mkdir_p(path.dirname)
     path.write(contents)
+  end
+
+  def with_i18n_available_locales(locales)
+    original = I18n.available_locales
+    I18n.available_locales = locales
+    yield
+  ensure
+    I18n.available_locales = original
   end
 end
 

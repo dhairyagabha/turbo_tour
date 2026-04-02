@@ -34,6 +34,10 @@ module TurboTour
       @journey_loader = JourneyLoader.new(configuration: configuration)
     end
 
+    def analytics_enabled?
+      configuration.analytics_enabled
+    end
+
     def journey_loader
       @journey_loader ||= JourneyLoader.new(configuration: configuration)
     end

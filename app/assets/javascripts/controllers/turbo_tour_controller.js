@@ -107,6 +107,7 @@ export default class extends Controller {
     this.skippableDefault = this.element.dataset.turboTourSkippableDefault !== "false"
     this.skippableByJourney = JSON.parse(this.element.dataset.turboTourSkippableMap || "{}")
     this.skippable = this.skippableDefault
+    this.translations = JSON.parse(this.element.dataset.turboTourTranslations || "{}")
     this.template = this.element.querySelector("template[data-turbo-tour-template]")
     this.onKeydown = this.keydown.bind(this)
     this.onPosition = this.position.bind(this)
@@ -258,7 +259,10 @@ export default class extends Controller {
     const current = this.index + 1
     if (this.title) this.title.textContent = this.step.title
     if (this.body) this.body.textContent = this.step.body
-    if (this.progress) this.progress.textContent = `Step ${current} of ${this.steps.length}`
+    if (this.progress) {
+      const progressTemplate = this.translations.progress
+      if (progressTemplate) this.progress.textContent = progressTemplate.replace("%{current}", current).replace("%{total}", this.steps.length)
+    }
 
     if (this.prevButton) {
       const disabled = this.index === 0
@@ -266,7 +270,11 @@ export default class extends Controller {
       this.prevButton.setAttribute("aria-disabled", String(disabled))
     }
 
-    if (this.nextButton) this.nextButton.textContent = this.index === this.steps.length - 1 ? "Finish" : "Next"
+    if (this.nextButton) {
+      const finishLabel = this.translations.finish
+      const nextLabel = this.translations.next
+      if (finishLabel && nextLabel) this.nextButton.textContent = this.index === this.steps.length - 1 ? finishLabel : nextLabel
+    }
 
     if (this.skipButton) {
       this.skipButton.hidden = !this.skippable

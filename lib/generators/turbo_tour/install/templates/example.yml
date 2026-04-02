@@ -15,3 +15,17 @@ journeys:
       target: invite-button
       title: "Invite your team"
       body: "Bring collaborators into your workspace."
+
+# Multi-language example (uncomment to use):
+#
+#   welcome_tour:
+#     - name: greeting
+#       target: greeting-banner
+#       title:
+#         en: "Welcome!"
+#         es: "¡Bienvenido!"
+#         fr: "Bienvenue !"
+#       body:
+#         en: "Let us show you around."
+#         es: "Permítanos mostrarle el lugar."
+#         fr: "Laissez-nous vous faire visiter."
