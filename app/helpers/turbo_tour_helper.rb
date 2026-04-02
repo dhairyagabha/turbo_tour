@@ -47,6 +47,13 @@ module TurboTourHelper
     end
   end
 
+  def turbo_tour_analytics_meta_tag
+    return unless TurboTour.analytics_enabled?
+
+    endpoint = "#{TurboTour.configuration.analytics_endpoint_path}/events"
+    tag(:meta, name: "turbo-tour-analytics-url", content: endpoint)
+  end
+
   private
 
   def resolve_turbo_tour_locale(explicit_locale)

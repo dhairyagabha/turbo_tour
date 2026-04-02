@@ -14,7 +14,7 @@ module TurboTour
     initializer "turbo_tour.assets" do |app|
       next unless app.config.respond_to?(:assets)
 
-      app.config.assets.precompile += %w[controllers/turbo_tour_controller.js]
+      app.config.assets.precompile += %w[controllers/turbo_tour_controller.js turbo_tour_analytics.js]
     end
 
     initializer "turbo_tour.i18n" do
