@@ -258,7 +258,7 @@ export default class extends Controller {
   render() {
     const current = this.index + 1
     if (this.title) this.title.textContent = this.step.title
-    if (this.body) this.body.textContent = this.step.body
+    if (this.body) this.body.innerHTML = this.step.body
     if (this.progress) {
       const progressTemplate = this.translations.progress
       if (progressTemplate) this.progress.textContent = progressTemplate.replace("%{current}", current).replace("%{total}", this.steps.length)
